@@ -1,0 +1,43 @@
+LIGHT:
+X 0.5
+Y 4.4
+Z 4.9
+
+
+CAMERA:
+
+X 7.4
+Y 0.9
+Z 3.9
+
+UP = (-0.1773, -0.0000, 0.9841) [XZY]
+LOOKAT = (-0.9841, -0.0000, -0.1773) [XZY]
+
+
+PLANE:
+
+X:4.1
+Y:0.1
+Z:4.6
+
+SCALE:
+X 2.5
+Y 1.0
+Z 1.3
+
+SPHERE 1 (NEAR):
+
+X 5.7
+Y 0.7
+Z 3.8
+
+RADIUS: 0.2
+
+
+SPHERE 2 (FAR):
+
+X 4.5
+Y 0.4
+Z 4.4
+
+RADIUS: 0.2
