@@ -18,41 +18,40 @@ Triangle::~Triangle()
 }
 
 bool Triangle::checkcollision(Ray * tocheck){
-    //From scratchapixel version
-    Vector3f n1 = b - a;
-    Vector3f n2 = c - a;
-    Vector3f bign = n1.cross(n2);
+    //Based on Wikipedia's version of
+    //Moller-Trumbore
 
-    float ndd = bign.dot(tocheck->getdir());
-    if (ndd == 0)
+    float eps = 0.0000001;
+    Vector3f e1,e2,h,s,q;
+    float aa,ff,uu,vv;
+    e1 = this->b - this->a;
+    e2 = this->c - this->a;
+
+    h = tocheck->getdir().cross(e2);
+    aa = e1.dot(h);
+    if (aa > -eps && aa < eps)
         return false;
 
-    float d = bign.dot(a);
-    float t = (bign.dot(tocheck->getpos()) + d) / ndd;
-    if (t < 0)
-        return false;
-    Vector3f p = tocheck->getpos() + t * tocheck->getdir();
-    Vector3f c;
-
-    Vector3f ega = b - a;
-    Vector3f vpa = p - a;
-    c = ega.cross(vpa);
-    if (bign.dot(c) < 0)
+    ff = 1.0/aa;
+    s = tocheck->getpos() - this->a;
+    uu = ff * (s.dot(h));
+    if (uu < 0.0 || uu > 1.0)
         return false;
 
-    Vector3f egb = c - b;
-    Vector3f vpb = p - b;
-    c = egb.cross(vpb);
-    if (bign.dot(c) < 0)
+    q = s.cross(e1);
+    vv = ff * (tocheck->getdir().dot(q));
+    if (vv < 0.0 || uu + vv > 1.0)
         return false;
 
-    Vector3f egc = a - c;
-    Vector3f vpc = p - c;
-    c = egc.cross(vpc);
-    if (bign.dot(c) < 0)
+    float tt = ff * e2.dot(q);
+    if (tt > eps)
+    {
+        return true;
+    }
+    else
         return false;
 
-    return true;
+
 }
 
 Shape * Triangle::tform(Matrix4f touse){
@@ -75,9 +74,9 @@ Shape * Triangle::tform(Matrix4f touse){
     tb << nb[0],nb[1],nb[2];
     tc << nc[0],nc[1],nc[2];
 
-    ta.normalize();
-    tb.normalize();
-    tc.normalize();
+    //a.normalize();
+    //tb.normalize();
+    //tc.normalize();
 
     return new Triangle(ta,tb,tc);
 
