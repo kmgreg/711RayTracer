@@ -15,7 +15,7 @@ Shape * Shape::tform(Matrix4f touse){
     return nullptr;
 }
 
-bool Shape::checkcollision(Ray * tocheck){
+bool Shape::checkcollision(Ray * tocheck, float& dist){
     return false;
 }
 

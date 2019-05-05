@@ -3,7 +3,7 @@
 Ray::Ray(Vector3f lo, Vector3f d)
 {
     pos = lo;
-    pos.normalize();
+    //pos.normalize();
     dir = d;
     dir.normalize();
 }

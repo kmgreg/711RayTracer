@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-#include <Eigen/Dense>
+#include <Eigen>
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -8,11 +8,10 @@
 
 #define HEIGHT 600
 #define WIDTH 800
-#define FLENGTH 0.1
+#define FLENGTH 1.0
 #define PWIDTH 4.0
 #define PHEIGHT 3.0
-
-
+#define INF 100000000
 
 using namespace Eigen;
 
@@ -70,35 +69,50 @@ void Camera::captureworld(World wld){
 
     std::vector<Shape *> clones = wld.getshapes();
     std::vector<Shape *> cams;
+    /*
     for (Shape * z: clones) {
         cams.push_back(z->tform((this->tra)));
     }
+    */
 
     float pixh = PHEIGHT / HEIGHT;
     float pixw = PWIDTH / WIDTH;
     float tx = -PWIDTH/2;
     float ty = PHEIGHT/2;
 
+    Vector3f p;
+    p << 0.0, 0.0, 0.0;
+
     //Generate rays and check
     for (int i = 0; i < HEIGHT; i++){
+        float ypx = ty - ((.5 + float(i)) * pixh);
         for (int c = 0; c < WIDTH; c++){
-                float xpx =  tx + (.5 * pixw) * c;
-                float ypx = ty + (.5 * pixh) * i;
+                float xpx =  tx + ((.5 + float(c)) * pixw);
                 Vector3f raypos;
                 raypos << xpx, ypx, FLENGTH;
-                Ray * pxr = new Ray(raypos,lookat);
+                Ray * pxr = new Ray(p,raypos);
                 bool foundcol = false;
                 Vector3f colr;
-                for (Shape * s : cams){
-                    if (s->checkcollision(pxr)){
-                        colr = s->getcolor();
+                float newt;
+                float champt = INF;
+                Shape * coll;
+                for (Shape * s : clones){
+                    if (s->checkcollision(pxr,newt)){
                         foundcol = true;
+                        if (newt < champt){
+                            champt = newt;
+                            coll = s;
+                        }
                     }
                 }
                 if (!foundcol){
                     Vector3f dflt;
                     dflt << 0.0, 0.2, 0.5;
                     colr = dflt;
+                }
+                else
+                {
+                    colr = coll->getcolor();
                 }
                 image.push_back(colr);
 

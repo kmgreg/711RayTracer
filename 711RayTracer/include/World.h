@@ -2,11 +2,13 @@
 #define WORLD_H
 
 #include "Shape.h"
+#include "Light.h"
 #include <vector>
 
 class World
 {
     std::vector<Shape *> geoset;
+    std::vector<Light *> lightset;
     public:
         World();
         virtual ~World();

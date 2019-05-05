@@ -2,7 +2,7 @@
 #define SPHERE_H
 
 #include "Shape.h"
-#include <Eigen/Dense>
+#include <Eigen>
 
 using namespace Eigen;
 
@@ -13,7 +13,7 @@ class Sphere : public Shape
     public:
         Sphere(float r, Vector3f loc);
         virtual ~Sphere();
-        bool checkcollision(Ray * tocheck);
+        bool checkcollision(Ray * tocheck, float& dist);
         Shape * tform(Matrix4f touse);
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     protected:

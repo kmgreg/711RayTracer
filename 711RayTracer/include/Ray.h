@@ -2,7 +2,7 @@
 #define RAY_H
 
 #include <vector>
-#include <Eigen/Dense>
+#include <Eigen>
 
 using namespace Eigen;
 class Ray

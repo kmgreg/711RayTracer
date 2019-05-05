@@ -17,7 +17,7 @@ Triangle::~Triangle()
     //dtor
 }
 
-bool Triangle::checkcollision(Ray * tocheck){
+bool Triangle::checkcollision(Ray * tocheck, float& dist){
     //Based on Wikipedia's version of
     //Moller-Trumbore
 
@@ -46,6 +46,7 @@ bool Triangle::checkcollision(Ray * tocheck){
     float tt = ff * e2.dot(q);
     if (tt > eps)
     {
+        dist = tt;
         return true;
     }
     else

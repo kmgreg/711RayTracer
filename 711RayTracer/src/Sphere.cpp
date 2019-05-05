@@ -10,7 +10,6 @@ Sphere::Sphere(float r, Vector3f loc)
     Shape();
     radius = r;
     center = loc;
-    center.normalize();
     color << 0.3, 0.0, 0.5;
 }
 
@@ -19,7 +18,7 @@ Sphere::~Sphere()
     //dtor
 }
 
-bool Sphere::checkcollision(Ray * tocheck){
+bool Sphere::checkcollision(Ray * tocheck, float& dist){
     //Scratchapixel version (thank you!)
     Vector3f L = tocheck->getpos() - center;
     float a = tocheck->getdir().dot(tocheck->getdir());
@@ -38,6 +37,7 @@ bool Sphere::checkcollision(Ray * tocheck){
         if (t1 < 0)
             return false;
     }
+    dist = t1;
     return true;
 }
 

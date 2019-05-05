@@ -1,8 +1,8 @@
 #ifndef CAMERA_H
 #define CAMERA_H
-#include <Eigen/Dense>
-#include <Eigen/Geometry>
+#include <Eigen>
 #include "World.h"
+
 
 
 using namespace Eigen;
