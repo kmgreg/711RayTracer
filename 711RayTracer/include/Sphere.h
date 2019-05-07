@@ -15,6 +15,7 @@ class Sphere : public Shape
         virtual ~Sphere();
         bool checkcollision(Ray * tocheck, float& dist);
         Shape * tform(Matrix4f touse);
+        Vector3f getnorm(Vector3f hitp);
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     protected:
 

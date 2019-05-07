@@ -82,3 +82,7 @@ Shape * Triangle::tform(Matrix4f touse){
     return new Triangle(ta,tb,tc);
 
 }
+
+Vector3f Triangle::getnorm(Vector3f hitp){
+    return (this->a - this->b).cross(this->a - this->c);
+}

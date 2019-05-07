@@ -4,7 +4,9 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <math.h>
 #include "Shape.h"
+#include "Intersection.h"
 
 #define HEIGHT 600
 #define WIDTH 800
@@ -14,6 +16,12 @@
 #define INF 100000000
 
 using namespace Eigen;
+
+Vector3f getr(Vector3f sray, Vector3f norm){
+    Vector3f t2 = 2*(sray.dot(norm)) * norm;
+    return t2;
+}
+
 
 Camera::Camera(Vector3f la, Vector3f u,
                Vector3f p)
@@ -47,9 +55,9 @@ void writetofile(std::vector<Vector3f> image)
     filewtt << HEIGHT << "\n";
     filewtt << 255 << "\n";
     for (Vector3f pix : image){
-        int r = (int) (pix[0] * 255);
-        int g = (int) (pix[1] * 255);
-        int b = (int) (pix[2] * 255);
+        int r = std::abs((int) (pix[0] * 255));
+        int g = std::abs((int) (pix[1] * 255));
+        int b = std::abs((int) (pix[2] * 255));
         filewtt << r << " " << g << " ";
         filewtt << b << " \n";
     }
@@ -69,6 +77,7 @@ void Camera::captureworld(World wld){
 
     std::vector<Shape *> clones = wld.getshapes();
     std::vector<Shape *> cams;
+    std::vector<Light *> lits = wld.getlits();
     /*
     for (Shape * z: clones) {
         cams.push_back(z->tform((this->tra)));
@@ -112,7 +121,40 @@ void Camera::captureworld(World wld){
                 }
                 else
                 {
-                    colr = coll->getcolor();
+                    //colr = coll->getcolor();
+                    Vector3f colpt = p + raypos * champt;
+                    Vector3f SS =  lits.at(0)->getpos() - colpt;
+                    SS.normalize();
+                    Ray * shadow = new Ray(colpt,SS);
+                    bool seelight = true;
+                    float dummyt; //if dist = 0, hitting self
+                    for (Shape * s : clones){
+                        if (s != coll){
+                        if (s->checkcollision(shadow, dummyt)){
+                            if (dummyt != 0){
+                                seelight = false;
+                                //ambi
+                                Vector3f blk;
+                                blk << 0,0,0;
+                                colr = blk;
+                            }
+                        }
+                        }
+                    }
+                    if (seelight){
+                        Vector3f VV = raypos;
+                        VV.normalize();
+                        Vector3f NN = coll->getnorm(colpt);
+                        NN.normalize();
+                        Vector3f RR = getr(SS,NN);
+                        Intersection * is = new Intersection();
+                        is->pt = colpt;
+                        is->incom = SS;
+                        is->norm = NN;
+                        is->reflex = RR;
+                        is->litlist = lits;
+                        colr = coll->getcolor(is);
+                    }
                 }
                 image.push_back(colr);
 

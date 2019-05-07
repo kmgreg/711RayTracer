@@ -9,9 +9,11 @@ class Light
     Vector3f pos;
     Vector3f colr;
     public:
-        Light();
+        Light(Vector3f lp, Vector3f lc);
         virtual ~Light();
-
+        Vector3f getpos();
+        Vector3f getcol();
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     protected:
 
     private:

@@ -51,3 +51,7 @@ Shape * Sphere::tform(Matrix4f touse){
     Sphere * td = new Sphere(radius, vec);
     return td;
 }
+
+Vector3f Sphere::getnorm(Vector3f hitp){
+    return hitp - this->center;
+}

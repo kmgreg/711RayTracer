@@ -13,6 +13,7 @@ class World
         World();
         virtual ~World();
         std::vector<Shape *> getshapes();
+        std::vector<Light *> getlits();
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     protected:
 
