@@ -21,6 +21,8 @@ class Shape
         Vector3f getambi();
         Vector3f getspec();
         virtual Vector3f getnorm(Vector3f hitp);
+        float kr;
+        float kt;
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     protected:
     Vector3f color;

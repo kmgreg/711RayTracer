@@ -13,11 +13,13 @@ class Camera
     Vector3f up;
     Vector3f pos;
     Matrix4f tra;
+    World * wld;
     public:
         Camera(Vector3f la, Vector3f u,
                Vector3f p);
         virtual ~Camera();
-        void captureworld(World wld);
+        void captureworld(World * wld);
+        Vector3f getcolor(Ray * r, int recdepth);
         EIGEN_MAKE_ALIGNED_OPERATOR_NEW
     protected:
 
