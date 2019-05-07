@@ -32,28 +32,28 @@ World::World()
     //Will make more robust later
     //Near
     Vector3f sc1;
-    sc1 << -.1, 0, .35;
+    sc1 << -.1, 0, .30;
     Sphere * so = new Sphere(0.2, sc1);
     so->setambi(wht);
     so->setspec(wht);
     PhongIll * sop = new PhongIll();
     sop->setvecs(so->getambi(), so->getspec());
-    sop->setparams(0.6,0.4,0.3,100);
+    sop->setparams(0.1,0.1,0.3,100);
     so->setilm(sop);
     so->kr = 0.0;
-    so->kt = 0;
+    so->kt = 0.8;
     geoset.push_back(so);
 
     //Far
 
     Vector3f sc2;
-    sc2 << .2, -.3, .8;
+    sc2 << .3, -.3, .8;
     Sphere * st = new Sphere(.3, sc2);
-    st->setambi(lol);
+    st->setambi(wht);
     st->setspec(wht);
     PhongIll * stp = new PhongIll();
     stp->setvecs(st->getambi(), st->getspec());
-    stp->setparams(0.3,0.5,0.1,100);
+    stp->setparams(0.1,0.2,0.1,100);
     st->setilm(stp);
     geoset.push_back(st);
     st->kr = 0.8;

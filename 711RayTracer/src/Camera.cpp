@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 #include <math.h>
 #include "Shape.h"
 #include "Intersection.h"
@@ -18,11 +19,40 @@
 
 using namespace Eigen;
 
+float clamp(float a, float b, float c){
+    if (c < a)
+        return a;
+    else if (c > b)
+        return b;
+    else
+        return c;
+}
+
 Vector3f getr(Vector3f sray, Vector3f norm){
     Vector3f t2 = sray - 2*(sray.dot(norm)) * norm;
     return t2;
 }
 
+//Based on Scratchapixel version
+Vector3f getfrac(Vector3f incom, Vector3f norm, float indx){
+    float cosi = clamp(-1, 1, incom.dot(norm));
+    float et = 1, ea = indx;
+    Vector3f n = norm;
+    if (cosi < 0)
+        cosi = -cosi;
+    else{
+        std::swap(et, ea);
+        n = -norm;
+    }
+    float eta = ea/et;
+    float k = 1 - eta*eta * (1-cosi * cosi);
+    if (k < 0){ //total refrac
+        return getr(incom, -norm);
+    }
+    else{
+        return eta * incom + (eta * cosi - std::sqrt(k)) * n;
+    }
+}
 
 Camera::Camera(Vector3f la, Vector3f u,
                Vector3f p)
@@ -109,7 +139,7 @@ Vector3f Camera::getcolor(Ray * r, int recdepth){
                             seelight = false;
                             //ambi
                             Vector3f blk;
-                            blk << 0,0,0;
+                            blk << 0.1,0.1,0.1;
                             colr = blk;
                         }
                     }
@@ -120,7 +150,7 @@ Vector3f Camera::getcolor(Ray * r, int recdepth){
                 VV.normalize();
                 Vector3f NN = coll->getnorm(colpt);
                 NN.normalize();
-                Vector3f RR = getr(SS,NN);
+                Vector3f RR = getr(VV,NN);
                 Intersection * is = new Intersection();
                 is->pt = colpt;
                 is->incom = SS;
@@ -136,7 +166,10 @@ Vector3f Camera::getcolor(Ray * r, int recdepth){
                         colr += coll->kr * this->getcolor(nr, recdepth + 1);
                     }
                     if (coll->kt > 0){
-
+                        Vector3f frac = getfrac(VV, NN, 1.01);
+                        frac.normalize();
+                        Ray * fr = new Ray(colpt, frac);
+                        colr += coll->kt * this->getcolor(fr, recdepth + 1);
                     }
                 }
             }
@@ -166,7 +199,7 @@ void Camera::captureworld(World * wld){
                 raypos << xpx, ypx, FLENGTH;
                 raypos.normalize();
                 Ray * pxr = new Ray(p,raypos);
-                Vector3f colr = this->getcolor(pxr,0);
+                Vector3f colr = this->getcolor(pxr,1);
                 image.push_back(colr);
 
         }
