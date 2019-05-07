@@ -122,7 +122,7 @@ void Camera::captureworld(World wld){
                 else
                 {
                     //colr = coll->getcolor();
-                    Vector3f colpt = p + raypos * champt;
+                    Vector3f colpt = p + raypos.normalized() * champt;
                     Vector3f SS =  lits.at(0)->getpos() - colpt;
                     SS.normalize();
                     Ray * shadow = new Ray(colpt,SS);

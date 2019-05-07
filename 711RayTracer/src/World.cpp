@@ -5,6 +5,7 @@
 #include "Triangle.h"
 #include "IllModel.h"
 #include "PhongIll.h"
+#include "GridIll.h"
 
 #include <vector>
 
@@ -18,11 +19,13 @@ World::World()
     Vector3f grn;
     Vector3f red;
     Vector3f wht;
+    Vector3f yelo;
 
     purp << 0.5,0,0.5;
     grn << 0,1,0;
     red << 1,0,0;
     wht << 1,1,1;
+    yelo << .7,.7,0;
 
     //Will make more robust later
     //Near
@@ -55,25 +58,24 @@ World::World()
     Vector3f c; //(Near left)
     Vector3f d; //(Near right)
 
-    a << -2, -1, .1;
-    b << 3,  -1, .1;
-    c << 3,  -1, 4;
-    d << -2, -1, 4;
+    a << -2, -1.2, .1;
+    b << 3,  -1.2, .1;
+    c << 3,  -1.2, 4;
+    d << -2, -1.2, 4;
 
     Triangle * tn = new Triangle(a,b,c);
     tn->setambi(red);
     tn->setspec(wht);
-    PhongIll * plnp = new PhongIll();
-    plnp->setvecs(tn->getambi(), tn->getspec());
-    plnp->setparams(.7, .6,.2,100);
-    tn->setilm(plnp);
+    GridIll * cbrd = new GridIll();
+    cbrd->setcols(red, yelo);
+    cbrd->setchk(.1);
+    cbrd->setcrnr(a,c);
+    tn->setilm(cbrd);
     geoset.push_back(tn);
 
     //further away
     Triangle * tf = new Triangle(a,d,c);
-    tf->setambi(red);
-    tf->setspec(wht);
-    tf->setilm(plnp);
+    tf->setilm(cbrd);
     geoset.push_back(tf);
 
 
