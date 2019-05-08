@@ -22,12 +22,12 @@ World::World()
     Vector3f yelo;
     Vector3f lol;
 
-    purp << 0.5,0,0.5;
-    grn << 0,1,0;
-    red << 1,0,0;
-    wht << 1,1,1;
-    yelo << .7,.7,0;
-    lol << .1,.1,.1;
+    purp << 50,0,50;
+    grn << 0,100,0;
+    red << 100,0,0;
+    wht << 33,33,33;
+    yelo << 50,50,0;
+    lol << 10,10,10;
 
     //Will make more robust later
     //Near
@@ -93,7 +93,7 @@ World::World()
     Vector3f ll,lc;
 
     ll << 1,4,1;
-    lc << .9,.9,0;
+    lc << 100,10,0;
 
     Light * lo = new Light(ll,lc);
     this->lightset.push_back(lo);

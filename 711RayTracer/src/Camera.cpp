@@ -18,6 +18,7 @@
 #define INF 100000000
 
 using namespace Eigen;
+using namespace std;
 
 float clamp(float a, float b, float c){
     if (c < a)
@@ -41,7 +42,7 @@ Vector3f getfrac(Vector3f incom, Vector3f norm, float indx){
     if (cosi < 0)
         cosi = -cosi;
     else{
-        std::swap(et, ea);
+        swap(et, ea);
         n = -norm;
     }
     float eta = ea/et;
@@ -50,7 +51,7 @@ Vector3f getfrac(Vector3f incom, Vector3f norm, float indx){
         return getr(incom, -norm);
     }
     else{
-        return eta * incom + (eta * cosi - std::sqrt(k)) * n;
+        return eta * incom + (eta * cosi - sqrt(k)) * n;
     }
 }
 
@@ -78,17 +79,78 @@ Camera::Camera(Vector3f la, Vector3f u,
 
 }
 
-void writetofile(std::vector<Vector3f> image)
+Vector3f getrtarg(Vector3f illum, float aol, float ldmax){
+    Vector3f cs = aol * illum;
+    float rr, gr, br;
+    rr = cs[0] / (1 + cs[0]);
+    gr = cs[1] / (1 + cs[1]);
+    br = cs[2] / (1 + cs[2]);
+
+    float rt,gt,bt;
+    rt = rr * ldmax;
+    gt = gr * ldmax;
+    bt = br * ldmax;
+
+    Vector3f targ;
+    targ << rt, gt, bt;
+    return targ;
+
+}
+
+float getlogavg(vector<float> illlist){
+    float lsum = 0;
+    float delta = 0.00001;
+    for (float f : illlist){
+        lsum += log(delta + f);
+    }
+    return exp(lsum / ((float)HEIGHT * WIDTH));
+
+}
+
+//go from RGB to Illuminance
+//CRT formula
+float toill(Vector3f rgb){
+    return abs(.27*rgb[0] + .67*rgb[1]+.06*rgb[2]);
+}
+
+std::vector<Vector3f> torgb(vector<Vector3f> lum, float ldmax, char whichTR){
+        vector<float> illum;
+        for (Vector3f vf : lum){
+            illum.push_back(toill(vf));
+        }
+        float lwa = getlogavg(illum);
+    if (whichTR == 'w'){
+        float powa = pow(lwa,.4);
+        float ldterm = pow(ldmax/2, 0.4);
+        float brackterm = (1.219 + ldterm) / (1.219 + powa);
+        float sf = pow(brackterm,2.5);
+        vector<Vector3f> trd;
+        for (Vector3f rgb : lum){
+            trd.push_back(sf * rgb);
+        }
+        return trd;
+    }
+    else{
+        float aol = .18/lwa;
+        vector<Vector3f> targv;
+        for (Vector3f vl : lum){
+            targv.push_back(getrtarg(vl,aol,ldmax));
+        }
+        return targv;
+    }
+}
+
+void writetofile(vector<Vector3f> image, float ldmax)
 {
-    std::ofstream filewtt;
+    ofstream filewtt;
     filewtt.open("output.ppm");
     filewtt << "P3\n" << WIDTH << " ";
     filewtt << HEIGHT << "\n";
     filewtt << 255 << "\n";
     for (Vector3f pix : image){
-        int r = std::abs((int) (pix[0] * 255));
-        int g = std::abs((int) (pix[1] * 255));
-        int b = std::abs((int) (pix[2] * 255));
+        int r = abs((int) (pix[0] / ldmax) * 255);
+        int g = abs((int) (pix[1] / ldmax) * 255);
+        int b = abs((int) (pix[2] / ldmax) * 255);
         filewtt << r << " " << g << " ";
         filewtt << b << " \n";
     }
@@ -120,7 +182,7 @@ Vector3f Camera::getcolor(Ray * r, int recdepth){
         }
         if (!foundcol){
             Vector3f dflt;
-            dflt << 0.0, 0.2, 0.5;
+            dflt << 0.0, 30, 70;
             colr = dflt;
         }
         else
@@ -180,7 +242,7 @@ Vector3f Camera::getcolor(Ray * r, int recdepth){
 void Camera::captureworld(World * wld){
 
     //Yo dawg...
-    std::vector<Vector3f>image;
+    vector<Vector3f>image;
     this->wld = wld;
     float pixh = PHEIGHT / HEIGHT;
     float pixw = PWIDTH / WIDTH;
@@ -204,5 +266,7 @@ void Camera::captureworld(World * wld){
 
         }
     }
-    writetofile(image);
+    float ldmax = 1;
+    vector<Vector3f> srgb = torgb(image, ldmax, 'w');
+    writetofile(srgb,ldmax);
 }
